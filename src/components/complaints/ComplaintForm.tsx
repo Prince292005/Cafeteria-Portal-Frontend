@@ -40,8 +40,7 @@ const ComplaintForm: React.FC<ComplaintFormProps> = ({ canteenId }) => {
       };
 
       const responseMessage = await createComplaint(data);
-      setSuccess(responseMessage || "Complaint submitted successfully!");
-
+      setSuccess("Complaint submitted successfully!");
       // Reset form
       setComplaintType("Food Quality");
       setDescription("");
