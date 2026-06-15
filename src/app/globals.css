@@ -1,0 +1,6 @@
+@import "tailwindcss";
+@plugin "daisyui";
+
+:root {
+  --my-shadow: -4px 6px 10px -2px rgb(102, 102, 102); /* left + bottom shadow */
+}
