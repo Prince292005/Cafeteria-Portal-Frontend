@@ -109,3 +109,41 @@ export const submitFeedback = async (
     throw error;
   }
 };
+
+// --- Quick Feedback (one-tap rating + streak/points) ---
+
+export interface EngagementResult {
+  currentStreak: number;
+  totalPoints: number;
+  streakExtended: boolean;
+}
+
+/**
+ * Submits a single one-tap star rating for a canteen.
+ * URL: POST /user/quick-feedback/canteen/{canteenId}
+ */
+export const submitQuickFeedback = async (
+  canteenId: string | number,
+  rating: number,
+  tag?: string
+): Promise<EngagementResult> => {
+  const headers = getAuthHeaders();
+  const response = await axios.post(
+    `${API_BASE_URL}/user/quick-feedback/canteen/${canteenId}`,
+    { rating, tag: tag ?? null },
+    { headers }
+  );
+  return response.data;
+};
+
+/**
+ * Fetches the logged-in student's current streak/points without submitting.
+ * URL: GET /user/quick-feedback/me
+ */
+export const getMyEngagement = async (): Promise<EngagementResult> => {
+  const headers = getAuthHeaders();
+  const response = await axios.get(`${API_BASE_URL}/user/quick-feedback/me`, {
+    headers: { Authorization: headers.Authorization },
+  });
+  return response.data;
+};

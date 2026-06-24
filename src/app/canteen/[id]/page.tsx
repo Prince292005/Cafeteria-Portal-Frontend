@@ -18,6 +18,7 @@ import {
 
 // Relative imports
 import { getPublicCanteenById, Canteen } from "../../../services/publicService";
+import QuickFeedbackWidget from "@/components/feedback/QuickFeedbackWidget";
 
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8080";
@@ -204,6 +205,9 @@ export default function CanteenDetailPage() {
                         </div>
                       </div>
                     </div>
+
+                    {/* ✅ NEW: One-tap quick feedback */}
+                    <QuickFeedbackWidget canteenId={canteen.id} />
 
                     {/* Safety Card */}
                     <div className="card bg-base-200/50 border border-base-200 p-6 rounded-2xl">
