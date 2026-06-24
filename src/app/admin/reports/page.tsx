@@ -85,6 +85,13 @@ export default function AdminReportsPage() {
             )}
             Generate
           </button>
+
+          <button
+  onClick={() => router.push("/admin/reports/dashboard")}
+  className="btn btn-outline btn-sm"
+>
+  Analytics Dashboard
+</button>
         </div>
       </div>
 

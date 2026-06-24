@@ -228,6 +228,43 @@ export const getMonthlyReport = async (month: string): Promise<string> => {
   return response.data;
 };
 
+export interface ReportComplaint {
+  title: string;
+  description: string;
+}
+
+export interface ReportFeedback {
+  question: string;
+  averageRating: number;
+  reasons: string[];
+}
+
+export interface CanteenReportData {
+  canteenId: number;
+  canteenName: string;
+  complaints: ReportComplaint[];
+  feedbackSummary: ReportFeedback[];
+}
+
+export interface MonthlyReportRaw {
+  month: string;
+  canteenReports: CanteenReportData[];
+}
+
+export const getMonthlyReportRaw = async (
+  month: string
+): Promise<MonthlyReportRaw> => {
+  const response = await axios.get(
+    `${ADMIN_URL}/reports/monthly`,
+    {
+      ...getAuthHeader(),
+      params: { month },
+    }
+  );
+
+  return response.data;
+};
+
 export const uploadCanteenAsset = async (
   canteenId: number,
   assetType: "image" | "fssai" | "menu",
