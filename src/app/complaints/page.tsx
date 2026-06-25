@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
   Send,
@@ -22,12 +21,13 @@ import {
 } from "@/services/complaintService";
 import { getPublicCanteens, Canteen } from "@/services/publicService";
 import toast from "react-hot-toast";
+import { useUser } from "@/contexts/authContext";
 
 // Simple in-memory cache to prevent refetching on navigation
 const canteenCache: Canteen[] | null = null;
 
 export default function FileComplaintPage() {
-  const router = useRouter();
+  const { user, loading: authLoading } = useUser();
 
   // --- State ---
   const [canteens, setCanteens] = useState<Canteen[]>(canteenCache || []);
@@ -59,7 +59,7 @@ export default function FileComplaintPage() {
         const data = await getPublicCanteens();
         setCanteens(data);
         // Update cache (in a real app, use React Query/SWR)
-        (window as any).__canteenCache = data;
+        (window as unknown as { __canteenCache?: Canteen[] }).__canteenCache = data;
       } catch (error) {
         console.error("Failed to load canteens", error);
         toast.error("Could not load facility list");
@@ -124,8 +124,6 @@ export default function FileComplaintPage() {
 
       toast.success("Complaint filed successfully!", { id: loadingToast });
       setIsSuccess(true);
-
-      setTimeout(() => router.push("/"), 2000);
     } catch (error) {
       console.error("Failed:", error);
       toast.error("Failed to submit. Please try again.", { id: loadingToast });
@@ -133,23 +131,91 @@ export default function FileComplaintPage() {
     }
   };
 
+  if (authLoading) {
+  return (
+    <div className="min-h-screen flex items-center justify-center">
+      <Loader2 className="w-8 h-8 animate-spin text-red-600" />
+    </div>
+  );
+}
+
+if (!user) {
+  return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+      <div className="bg-white rounded-2xl shadow-xl p-10 max-w-lg w-full text-center">
+        <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gray-100 flex items-center justify-center">
+          <ShieldAlert className="w-10 h-10 text-gray-500" />
+        </div>
+
+        <h2 className="text-4xl font-bold mb-4">
+          Login Required
+        </h2>
+
+        <p className="text-gray-500 mb-8">
+          You must be logged in to submit a complaint.
+        </p>
+
+        <div className="flex justify-center gap-4">
+          <Link
+            href="/"
+            className="btn btn-ghost rounded-lg px-6"
+          >
+            Go Back
+          </Link>
+
+          <Link
+            href="/login"
+            className="btn bg-indigo-600 hover:bg-indigo-700 text-white border-none rounded-lg px-6"
+          >
+            Login Now
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
+}
+
   if (isSuccess) {
     return (
       <div className="min-h-screen bg-base-200 flex items-center justify-center p-4">
         <div className="card w-full max-w-md bg-white shadow-xl rounded-2xl animate-in zoom-in-95 duration-300">
-          <div className="card-body items-center text-center p-12">
+          <div className="card-body items-center text-center p-10">
             <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mb-6 shadow-sm">
               <CheckCircle2 className="w-10 h-10 text-green-600" />
             </div>
             <h2 className="text-2xl font-bold text-gray-900 mb-2">
               Complaint Submitted
             </h2>
-            <p className="text-gray-500 text-sm">
-              Your report has been filed successfully.
+            <p className="text-gray-500 text-sm leading-relaxed">
+              Your complaint has been marked as{" "}
+              <span className="badge badge-warning badge-sm font-semibold align-middle">
+                Pending
+              </span>
+              . Our CMC team will review it shortly.
             </p>
-            <p className="text-xs text-gray-400 mt-8 animate-pulse">
-              Redirecting to home...
+            <p className="text-gray-400 text-xs mt-2">
+              You can track its progress anytime from Complaint History.
             </p>
+
+            <div className="flex flex-col gap-3 w-full mt-8">
+              <Link
+                href="/complaints-history"
+                className="btn bg-red-600 hover:bg-red-700 text-white border-none rounded-lg w-full font-semibold gap-2"
+              >
+                View Complaint History
+              </Link>
+              <button
+                onClick={() => {
+                  setIsSuccess(false);
+                  setSelectedCanteenId("");
+                  setFormData({ title: "", description: "" });
+                  removeFile();
+                }}
+                className="btn btn-ghost rounded-lg w-full text-gray-600 hover:bg-gray-100"
+              >
+                Submit Another Complaint
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -176,6 +242,13 @@ export default function FileComplaintPage() {
           <p className="text-sm text-gray-500 mt-2">
             Report an issue with food quality, hygiene, or service.
           </p>
+          <Link
+            href="/complaints-history"
+            className="text-sm text-red-600 hover:text-red-700 font-medium mt-3 inline-flex items-center gap-1"
+          >
+            Already submitted a complaint? View Complaint History
+            <span aria-hidden="true">→</span>
+          </Link>
         </div>
 
         <div className="p-8 bg-gray-50/30">
@@ -335,8 +408,13 @@ export default function FileComplaintPage() {
             <div className="flex gap-3 p-3 bg-blue-50 text-blue-800 rounded-lg text-xs border border-blue-100 items-start leading-relaxed">
               <Info className="w-4 h-4 flex-shrink-0 mt-0.5" />
               <p>
-                Reports are reviewed by the <strong>Administration</strong>.
-                Providing proof helps speed up resolution.
+                Every complaint is reviewed by the{" "}
+                <strong>Cafeteria Management Committee (CMC)</strong>. Track
+                its progress anytime in{" "}
+                <Link href="/complaints-history" className="underline font-semibold hover:text-blue-900">
+                  Complaint History
+                </Link>
+                . Photos help us verify and resolve issues faster.
               </p>
             </div>
 
