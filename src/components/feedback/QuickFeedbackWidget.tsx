@@ -46,7 +46,7 @@ export default function QuickFeedbackWidget({
       setSubmitted(true);
 
       if (result.streakExtended && result.currentStreak > 1) {
-        toast.success(`🔥 ${result.currentStreak}-day streak! Keep it up.`);
+        toast.success(`${result.currentStreak}-day streak! Keep it up.`);
       } else {
         toast.success("Thanks for the feedback!");
       }
@@ -58,21 +58,38 @@ export default function QuickFeedbackWidget({
     }
   };
 
+  // Streak badge — always rendered the same way regardless of submit state,
+  // so it's visible both before and after a student rates today's meal.
+  // Shows for any streak >= 1 (previously this was hidden entirely once
+  // `submitted` flipped true, and a streak of exactly 1 was never shown at all).
+  const streakBadge =
+    streak !== null && streak > 0 ? (
+      <div className="flex items-center gap-1 bg-white px-2.5 py-1 rounded-full border border-teal-100 shrink-0">
+        <Flame className="w-4 h-4 text-orange-500" />
+        <span className="text-sm font-semibold text-teal-900">
+          {streak}
+        </span>
+      </div>
+    ) : null;
+
   if (submitted) {
     return (
       <div className="card bg-teal-50 border border-teal-100 p-6 rounded-2xl">
-        <div className="flex items-center gap-3">
-          <div className="p-2 bg-white text-teal-600 rounded-xl shadow-sm border border-teal-100">
-            <CheckCircle2 className="w-6 h-6" />
+        <div className="flex items-start justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-white text-teal-600 rounded-xl shadow-sm border border-teal-100">
+              <CheckCircle2 className="w-6 h-6" />
+            </div>
+            <div>
+              <h4 className="font-bold text-teal-900">Feedback recorded</h4>
+              <p className="text-sm text-teal-700/80 mt-0.5">
+                {streak && streak > 1
+                  ? `You're on a ${streak}-day feedback streak.`
+                  : "Thanks for letting us know how it went."}
+              </p>
+            </div>
           </div>
-          <div>
-            <h4 className="font-bold text-teal-900">Feedback recorded</h4>
-            <p className="text-sm text-teal-700/80 mt-0.5">
-              {streak && streak > 1
-                ? `You're on a ${streak}-day feedback streak.`
-                : "Thanks for letting us know how it went."}
-            </p>
-          </div>
+          {streakBadge}
         </div>
       </div>
     );
@@ -89,14 +106,7 @@ export default function QuickFeedbackWidget({
             One tap — takes 5 seconds.
           </p>
         </div>
-        {streak !== null && streak > 0 && (
-          <div className="flex items-center gap-1 bg-white px-2.5 py-1 rounded-full border border-teal-100 shrink-0">
-            <Flame className="w-4 h-4 text-orange-500" />
-            <span className="text-sm font-semibold text-teal-900">
-              {streak}
-            </span>
-          </div>
-        )}
+        {streakBadge}
       </div>
 
       {/* Star rating */}
