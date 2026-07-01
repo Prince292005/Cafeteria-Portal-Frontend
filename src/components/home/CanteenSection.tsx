@@ -17,8 +17,8 @@ const CanteenSection: React.FC = () => {
       try {
         const data = await getPublicCanteens();
         setCanteens(data);
-      } catch (err: any) {
-        setError(err.message);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Something went wrong.");
       } finally {
         setLoading(false);
       }
@@ -42,15 +42,18 @@ const CanteenSection: React.FC = () => {
     <section id="canteens" className="py-16 bg-base-100">
       <div className="container mx-auto px-4 relative">
         {/* Header Section */}
-        <div className="flex flex-col items-center mb-10 text-center">
-          <h2 className="text-4xl font-bold tracking-tight">
-            Explore Our <span className="text-primary">Canteens</span>
+        <div className="flex flex-col items-start mb-10">
+          <span className="text-sm font-semibold text-[var(--turmeric)] mb-3">
+            Choose a counter
+          </span>
+          <h2 className="font-display text-3xl md:text-4xl text-[var(--ink)]">
+            Today&apos;s canteens
           </h2>
-          <div className="h-1.5 w-20 bg-primary mt-4 rounded-full opacity-80"></div>
-          <p className="text-base-content/70 mt-4 max-w-2xl text-lg">
-            Discover a variety of dining options available on campus. Browse the
-            list below to view menus, info, and more.
+          <p className="text-[var(--ink-soft)] mt-3 max-w-xl">
+            Menus, hygiene certificates, and a one-tap rating for every
+            counter on campus.
           </p>
+          <div className="hairline w-full mt-8" />
         </div>
 
         {/* Loading State */}
@@ -86,7 +89,7 @@ const CanteenSection: React.FC = () => {
             {/* Left Arrow Button (Visible on Desktop Hover) */}
             <button
               onClick={() => scroll("left")}
-              className="absolute left-0 top-1/2 -translate-y-1/2 z-10 btn btn-circle btn-neutral shadow-xl opacity-0 group-hover:opacity-100 transition-all duration-300 hidden md:flex hover:scale-110"
+              className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-11 h-11 flex items-center justify-center rounded-full bg-[var(--paper)] border border-[var(--kraft-border)] text-[var(--ink)] shadow-[0_8px_20px_-8px_rgba(26,20,16,0.25)] opacity-0 group-hover:opacity-100 transition-all duration-300 hidden md:flex hover:bg-[var(--espresso)] hover:text-[var(--paper)] hover:border-[var(--espresso)]"
               aria-label="Scroll Left"
             >
               <svg
@@ -124,7 +127,7 @@ const CanteenSection: React.FC = () => {
             {/* Right Arrow Button (Visible on Desktop Hover) */}
             <button
               onClick={() => scroll("right")}
-              className="absolute right-0 top-1/2 -translate-y-1/2 z-10 btn btn-circle btn-neutral shadow-xl opacity-0 group-hover:opacity-100 transition-all duration-300 hidden md:flex hover:scale-110"
+              className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-11 h-11 flex items-center justify-center rounded-full bg-[var(--paper)] border border-[var(--kraft-border)] text-[var(--ink)] shadow-[0_8px_20px_-8px_rgba(26,20,16,0.25)] opacity-0 group-hover:opacity-100 transition-all duration-300 hidden md:flex hover:bg-[var(--espresso)] hover:text-[var(--paper)] hover:border-[var(--espresso)]"
               aria-label="Scroll Right"
             >
               <svg

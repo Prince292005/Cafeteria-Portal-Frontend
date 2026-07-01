@@ -1,6 +1,152 @@
 @import "tailwindcss";
-@plugin "daisyui";
+@plugin "daisyui" {
+  themes: false;
+}
+@plugin "daisyui/theme" {
+  name: "canteen";
+  default: true;
+  color-scheme: light;
+  --color-base-100: #fbf8f2;
+  --color-base-200: #f3ede0;
+  --color-base-300: #e8dcc8;
+  --color-base-content: #1a1410;
+  --color-primary: #c2410c;
+  --color-primary-content: #fbf8f2;
+  --color-secondary: #166534;
+  --color-secondary-content: #fbf8f2;
+  --color-accent: #7c2d12;
+  --color-accent-content: #fbf8f2;
+  --color-neutral: #1f1812;
+  --color-neutral-content: #fbf8f2;
+  --color-success: #166534;
+  --color-success-content: #fbf8f2;
+  --color-warning: #b45309;
+  --color-warning-content: #fbf8f2;
+  --color-error: #b91c1c;
+  --color-error-content: #fbf8f2;
+  --color-info: #1d4ed8;
+  --color-info-content: #fbf8f2;
+  --radius-box: 1rem;
+  --radius-field: 0.5rem;
+  --radius-selector: 0.5rem;
+}
 
 :root {
-  --my-shadow: -4px 6px 10px -2px rgb(102, 102, 102); /* left + bottom shadow */
+  /* Warm canteen palette — paper, espresso, turmeric, chalkboard green */
+  --paper: #fbf8f2;
+  --paper-dim: #f3ede0;
+  --ink: #1a1410;
+  --ink-soft: #4a4038;
+  --espresso: #1f1812;
+  --espresso-card: #2a2018;
+  --turmeric: #c2410c;
+  --turmeric-deep: #7c2d12;
+  --chalk-green: #166534;
+  --chalk-green-bright: #22c55e;
+  --kraft-border: #e8dcc8;
+  --kraft-border-dark: #3d3226;
+
+  --my-shadow: -4px 6px 10px -2px rgb(102, 102, 102);
 }
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.font-display {
+  font-family: var(--font-display);
+  font-optical-sizing: auto;
+  letter-spacing: -0.015em;
+}
+
+.label {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.75rem;
+  letter-spacing: 0.01em;
+  text-transform: none;
+  color: var(--ink-soft);
+}
+
+::selection {
+  background: var(--turmeric);
+  color: var(--paper);
+}
+
+/* Visible keyboard focus, kept quiet but present everywhere */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid var(--turmeric);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Subtle paper grain — a quiet texture, not a graphic */
+.grain {
+  position: relative;
+  isolation: isolate;
+}
+.grain::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.05;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 180px 180px;
+}
+
+/* Thin rule used as a structural divider, not decoration */
+.hairline {
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    transparent,
+    var(--kraft-border-dark) 15%,
+    var(--kraft-border-dark) 85%,
+    transparent
+  );
+}
+
+/* Slim, on-brand scrollbar for the committee/announcement panels */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: var(--kraft-border) transparent;
+}
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: var(--kraft-border);
+  border-radius: 999px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: var(--turmeric);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+/* Tactile press feedback — used on primary buttons so taps feel responsive,
+   not just hover-styled */
+.btn-tactile {
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.btn-tactile:active {
+  transform: scale(0.97);
+}
+

@@ -4,7 +4,6 @@ import React, { useEffect, useState } from "react";
 import { useParams, useRouter, notFound } from "next/navigation";
 import Link from "next/link";
 
-// Icons
 import {
   ArrowLeft,
   Info,
@@ -12,20 +11,15 @@ import {
   History,
   ShieldCheck,
   Store,
-  FileText, // Menu Icon
+  FileText,
   ExternalLink,
 } from "lucide-react";
 
-// Relative imports
 import { getPublicCanteenById, Canteen } from "../../../services/publicService";
 import QuickFeedbackWidget from "@/components/feedback/QuickFeedbackWidget";
 
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8080";
-
-// Placeholder for Image Blur
-const PLACEHOLDER_SVG =
-  "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIiBmaWxsPSIjZTU1ZWRlIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiAvPjwvc3ZnPg==";
 
 export default function CanteenDetailPage() {
   const params = useParams();
@@ -39,9 +33,8 @@ export default function CanteenDetailPage() {
     const fetchData = async () => {
       try {
         const canteenData = await getPublicCanteenById(id);
-        // console.log("Canteen Data: ", canteenData);
         setCanteen(canteenData);
-      } catch (err) {
+      } catch {
         notFound();
       } finally {
         setLoading(false);
@@ -59,8 +52,8 @@ export default function CanteenDetailPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-base-200/30">
-        <span className="loading loading-spinner loading-lg text-primary"></span>
+      <div className="flex items-center justify-center min-h-screen bg-[var(--paper-dim)]">
+        <span className="loading loading-spinner loading-lg text-[var(--turmeric)]"></span>
       </div>
     );
   }
@@ -68,22 +61,22 @@ export default function CanteenDetailPage() {
   if (!canteen) return null;
 
   return (
-    <div className="min-h-screen bg-base-200/30">
+    <div className="min-h-screen bg-[var(--paper-dim)]">
       <div className="w-full p-4 md:p-8">
         {/* --- HEADER --- */}
         <div className="flex items-center gap-4 mb-6">
           <button
             onClick={() => router.back()}
-            className="btn btn-circle btn-ghost hover:bg-base-300"
+            className="w-11 h-11 rounded-full flex items-center justify-center text-[var(--ink-soft)] hover:bg-white hover:text-[var(--ink)] transition-colors"
           >
             <ArrowLeft className="w-6 h-6" />
           </button>
           <div>
-            <h1 className="text-3xl font-bold flex items-center gap-3">
-              <Store className="w-8 h-8 text-primary" />
-              Canteen Profile
+            <h1 className="font-display text-3xl text-[var(--ink)] flex items-center gap-3">
+              <Store className="w-7 h-7 text-[var(--turmeric)]" />
+              Canteen profile
             </h1>
-            <p className="text-base-content/70">
+            <p className="text-[var(--ink-soft)] text-sm mt-1">
               View details, certifications, and menu.
             </p>
           </div>
@@ -91,32 +84,34 @@ export default function CanteenDetailPage() {
 
         <div className="flex flex-col lg:flex-row gap-6">
           {/* --- SIDEBAR --- */}
-          <aside className="w-full lg:w-72 flex-shrink-0">
-            <div className="card bg-base-100 shadow-lg border border-base-200 sticky top-6 overflow-hidden">
-              <div className="bg-base-200/50 p-4 border-b border-base-200">
-                <h3 className="font-bold text-lg">Actions</h3>
+          <aside className="w-full lg:w-72 shrink-0">
+            <div className="bg-white rounded-2xl border border-[var(--kraft-border)] shadow-sm sticky top-6 overflow-hidden">
+              <div className="bg-[var(--paper-dim)] p-4 border-b border-[var(--kraft-border)]">
+                <h3 className="font-display text-lg text-[var(--ink)]">
+                  Actions
+                </h3>
               </div>
-              <div className="card-body p-2">
-                <ul className="menu w-full p-0 gap-1">
+              <div className="p-2">
+                <ul className="flex flex-col gap-1">
                   <li>
-                    <a className="active font-medium bg-primary/10 text-primary hover:bg-primary/20 border-l-4 border-primary rounded-r-lg rounded-l-none">
-                      <Info className="w-5 h-5" /> Canteen Details
-                    </a>
+                    <span className="flex items-center gap-3 px-4 py-3 rounded-lg font-medium bg-[var(--turmeric)]/10 text-[var(--turmeric)] border-l-4 border-[var(--turmeric)]">
+                      <Info className="w-5 h-5" /> Canteen details
+                    </span>
                   </li>
                   <li>
                     <Link
-                      href={`/complaints`}
-                      className="font-medium hover:bg-base-200 border-l-4 border-transparent"
+                      href="/complaints"
+                      className="flex items-center gap-3 px-4 py-3 rounded-lg font-medium text-[var(--ink-soft)] hover:bg-[var(--paper-dim)] border-l-4 border-transparent transition-colors"
                     >
-                      <MessageSquarePlus className="w-5 h-5" /> File a Complaint
+                      <MessageSquarePlus className="w-5 h-5" /> File a complaint
                     </Link>
                   </li>
                   <li>
                     <Link
-                      href={`/complaints-history`}
-                      className="font-medium hover:bg-base-200 border-l-4 border-transparent"
+                      href="/complaints-history"
+                      className="flex items-center gap-3 px-4 py-3 rounded-lg font-medium text-[var(--ink-soft)] hover:bg-[var(--paper-dim)] border-l-4 border-transparent transition-colors"
                     >
-                      <History className="w-5 h-5" /> Complaint History
+                      <History className="w-5 h-5" /> Complaint history
                     </Link>
                   </li>
                 </ul>
@@ -126,59 +121,60 @@ export default function CanteenDetailPage() {
 
           {/* --- MAIN CONTENT --- */}
           <div className="flex-grow">
-            <div className="card bg-base-100 shadow-xl border border-base-200 overflow-hidden">
+            <div className="bg-white rounded-2xl border border-[var(--kraft-border)] shadow-sm overflow-hidden">
               {/* Hero Image */}
-              <figure className="relative h-64 md:h-80 w-full bg-neutral">
+              <div className="relative h-64 md:h-80 w-full bg-[var(--espresso)]">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src={getImageUrl(canteen.imageUrl) || "/placeholder.jpg"} // Use helper or fallback
+                  src={getImageUrl(canteen.imageUrl) || "/placeholder.jpg"}
                   alt={canteen.canteenName}
                   className="object-cover w-full h-full opacity-90"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
                 <div className="absolute bottom-0 left-0 p-6 md:p-10 w-full">
                   <div className="flex flex-wrap gap-3 mb-3">
-                    <div className="badge badge-success gap-1.5 border-none text-white shadow-sm">
-                      <div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></div>{" "}
-                      Open Now
+                    <div className="inline-flex items-center gap-1.5 text-xs font-semibold bg-[var(--chalk-green)] text-white px-3 py-1.5 rounded-full">
+                      <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+                      Open now
                     </div>
-                    <div className="badge badge-outline text-white/80 border-white/40">
+                    <div className="inline-flex items-center text-xs font-semibold text-white/80 border border-white/30 px-3 py-1.5 rounded-full">
                       ID: {canteen.id}
                     </div>
                   </div>
-                  <h1 className="text-4xl md:text-5xl font-bold text-white drop-shadow-lg tracking-tight">
+                  <h1 className="font-display text-4xl md:text-5xl text-white drop-shadow-lg">
                     {canteen.canteenName}
                   </h1>
                 </div>
-              </figure>
+              </div>
 
-              <div className="card-body p-6 md:p-10">
+              <div className="p-6 md:p-10">
                 <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
                   {/* Left: Description */}
-                  <div className="prose max-w-none">
-                    <h3 className="text-xl font-semibold mb-4 flex items-center gap-2 text-base-content">
-                      <Info className="w-5 h-5 text-primary" /> About this
-                      Canteen
+                  <div>
+                    <h3 className="font-display text-xl text-[var(--ink)] mb-4 flex items-center gap-2">
+                      <Info className="w-5 h-5 text-[var(--turmeric)]" /> About
+                      this canteen
                     </h3>
-                    <p className="text-base-content/70 leading-relaxed text-lg">
+                    <p className="text-[var(--ink-soft)] leading-relaxed text-lg">
                       {canteen.info ||
                         "Welcome to our canteen. We serve fresh and healthy meals for students and staff."}
                     </p>
                   </div>
 
-                  {/* Right Column: Menu & Safety */}
+                  {/* Right Column: Menu, Feedback & Safety */}
                   <div className="flex flex-col gap-6">
-                    {/* ✅ NEW: Menu Card */}
-                    <div className="card bg-orange-50 border border-orange-100 p-6 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
+                    {/* Menu Card */}
+                    <div className="bg-[var(--turmeric)]/6 border border-[var(--turmeric)]/15 p-6 rounded-2xl">
                       <div className="flex items-start gap-4">
-                        <div className="p-3 bg-white text-orange-500 rounded-xl shadow-sm border border-orange-100">
+                        <div className="p-3 bg-white text-[var(--turmeric)] rounded-xl shadow-sm border border-[var(--turmeric)]/15">
                           <FileText className="w-8 h-8" />
                         </div>
                         <div className="flex-1">
-                          <h4 className="font-bold text-lg text-orange-900">
-                            Daily Menu
+                          <h4 className="font-display text-lg text-[var(--turmeric-deep)]">
+                            Daily menu
                           </h4>
-                          <p className="text-sm text-orange-700/80 mt-1 leading-relaxed">
-                            Check out today's specials and regular items.
+                          <p className="text-sm text-[var(--ink-soft)] mt-1 leading-relaxed">
+                            Check out today&apos;s specials and regular items.
                           </p>
 
                           <div className="mt-4">
@@ -191,35 +187,35 @@ export default function CanteenDetailPage() {
                                 }
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="btn btn-sm rounded-lg btn-warning text-white w-full sm:w-auto gap-2 shadow-sm"
+                                className="inline-flex items-center gap-2 text-sm font-semibold bg-[var(--turmeric)] text-white px-4 py-2.5 rounded-lg hover:bg-[var(--turmeric-deep)] transition-colors w-full sm:w-auto justify-center"
                               >
-                                <ExternalLink className="w-4 h-4" /> View Full
-                                Menu
+                                <ExternalLink className="w-4 h-4" /> View full
+                                menu
                               </a>
                             ) : (
-                              <div className="badge badge-ghost bg-white/50 text-orange-400 border-orange-200 p-3">
-                                Menu Coming Soon
-                              </div>
+                              <span className="inline-block text-xs font-medium bg-white text-[var(--turmeric)]/60 border border-[var(--turmeric)]/20 px-3 py-2 rounded-lg">
+                                Menu coming soon
+                              </span>
                             )}
                           </div>
                         </div>
                       </div>
                     </div>
 
-                    {/* ✅ NEW: One-tap quick feedback */}
+                    {/* One-tap quick feedback */}
                     <QuickFeedbackWidget canteenId={canteen.id} />
 
                     {/* Safety Card */}
-                    <div className="card bg-base-200/50 border border-base-200 p-6 rounded-2xl">
+                    <div className="bg-[var(--paper-dim)] border border-[var(--kraft-border)] p-6 rounded-2xl">
                       <div className="flex items-start gap-4">
-                        <div className="p-3 bg-green-100 text-green-700 rounded-xl shadow-sm">
+                        <div className="p-3 bg-[var(--chalk-green)]/10 text-[var(--chalk-green)] rounded-xl shadow-sm">
                           <ShieldCheck className="w-8 h-8" />
                         </div>
                         <div>
-                          <h4 className="font-bold text-lg">
-                            Safety & Hygiene
+                          <h4 className="font-display text-lg text-[var(--ink)]">
+                            Safety &amp; hygiene
                           </h4>
-                          <p className="text-sm text-base-content/60 mt-1 leading-relaxed">
+                          <p className="text-sm text-[var(--ink-soft)] mt-1 leading-relaxed">
                             This establishment adheres to strict food safety
                             protocols.
                           </p>
@@ -231,9 +227,9 @@ export default function CanteenDetailPage() {
                             href={getImageUrl(canteen.fssaiCertificateUrl)!}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="btn btn-sm btn-outline rounded-lg btn-success gap-2"
+                            className="inline-flex items-center gap-2 text-sm font-semibold text-[var(--chalk-green)] border border-[var(--chalk-green)]/30 px-4 py-2 rounded-lg hover:bg-[var(--chalk-green)]/10 transition-colors"
                           >
-                            <ShieldCheck className="w-4 h-4" /> View FSSAI Cert
+                            <ShieldCheck className="w-4 h-4" /> View FSSAI cert
                           </a>
                         </div>
                       )}

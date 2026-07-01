@@ -8,87 +8,65 @@ import {
   sendForgotPasswordOtp,
   verifyForgotPasswordOtp,
   resetPassword,
-} from "../../../services/authService"; // Ensure this path is correct
-import { X, Loader2, KeyRound, CheckCircle } from "lucide-react";
+} from "../../../services/authService";
+import { X, Loader2, KeyRound, CheckCircle, Eye, EyeOff } from "lucide-react";
 import toast from "react-hot-toast";
 
 const Login: React.FC = () => {
-  // 1. Manage state for inputs and errors
   const [studentId, setStudentId] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
-
-  // 2. Get context
   const { login, user } = useUser();
 
-  // --- FORGOT PASSWORD STATE ---
   const [isForgotOpen, setIsForgotOpen] = useState(false);
-  const [forgotStep, setForgotStep] = useState(1); // 1: Email, 2: OTP, 3: New Password
+  const [forgotStep, setForgotStep] = useState(1);
   const [forgotEmail, setForgotEmail] = useState("");
   const [forgotOtp, setForgotOtp] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [forgotLoading, setForgotLoading] = useState(false);
   const [forgotMsg, setForgotMsg] = useState({ type: "", text: "" });
 
-  // 3. Handle Redirection based on Role
   useEffect(() => {
     if (user) {
-      if (user.role === "ROLE_ADMIN") {
-        router.push("/admin/dashboard");
-      } else {
-        router.push("/");
-      }
+      router.push(user.role === "ROLE_ADMIN" ? "/admin/dashboard" : "/");
     }
   }, [user, router]);
 
-  // 4. Handle Login Submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
-
     try {
-      await login({ studentId: studentId, password });
-      toast.success("Logged in successfully!");
-    } catch (err: any) {
-      console.error(err);
-      toast.error(err.message || "An error occurred during login.");
+      await login({ studentId, password });
+      toast.success("Welcome back!");
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : "Login failed.");
     }
   };
-
-  // --- FORGOT PASSWORD HANDLERS ---
 
   const handleForgotFlow = async (e: React.FormEvent) => {
     e.preventDefault();
     setForgotLoading(true);
     setForgotMsg({ type: "", text: "" });
-
     try {
       if (forgotStep === 1) {
-        // Step 1: Send OTP
         await sendForgotPasswordOtp(forgotEmail);
         setForgotMsg({ type: "success", text: "OTP sent to your email." });
         setForgotStep(2);
       } else if (forgotStep === 2) {
-        // Step 2: Verify OTP
         await verifyForgotPasswordOtp(forgotEmail, forgotOtp);
-        setForgotMsg({ type: "success", text: "OTP Verified." });
+        setForgotMsg({ type: "success", text: "OTP verified." });
         setForgotStep(3);
-      } else if (forgotStep === 3) {
-        // Step 3: Reset Password
+      } else {
         await resetPassword(forgotEmail, newPassword);
         setForgotMsg({ type: "success", text: "Password reset successfully!" });
-
-        // Close modal after success
         setTimeout(() => {
           setIsForgotOpen(false);
           setForgotStep(1);
           setForgotMsg({ type: "", text: "" });
-          // Optional: Pre-fill student ID if it matches email structure (rare for ID, but okay)
         }, 2000);
       }
-    } catch (err: any) {
-      setForgotMsg({ type: "error", text: err.message || "Action failed." });
+    } catch (err: unknown) {
+      setForgotMsg({ type: "error", text: err instanceof Error ? err.message : "Action failed." });
     } finally {
       setForgotLoading(false);
     }
@@ -103,219 +81,211 @@ const Login: React.FC = () => {
     setNewPassword("");
   };
 
+  const inputClass =
+    "w-full bg-[var(--paper-dim)] border border-[var(--kraft-border)] focus:border-[var(--turmeric)] focus:bg-white focus:outline-none rounded-xl px-4 py-3.5 text-[var(--ink)] placeholder:text-[var(--ink-soft)]/40 transition-all duration-200";
+
   return (
-    <div
-      data-theme="light"
-      className="flex min-h-screen min-w-fit items-center justify-center bg-gray-100"
-    >
-      <div className="card w-full m-10 max-w-lg rounded-2xl shadow-[var(--my-shadow)] bg-base-100">
-        <div className="card-body">
-          <div className="self-center">
-            <Link href="/">
-              <img src="/logo.png" className="h-30 w-30" alt="logo" />
-            </Link>
-          </div>
-          <h1 className="text-center text-2xl font-bold text-base-content">
-            Welcome Back
-          </h1>
-          <p className="text-center text-sm text-gray-500 mb-4">
-            Please sign in to continue
+    <div className="min-h-screen flex bg-[var(--paper)]">
+      {/* Left brand panel — desktop only */}
+      <div className="hidden lg:flex lg:w-[42%] bg-[var(--espresso)] flex-col justify-between p-12 xl:p-16">
+        <Link href="/" className="flex items-center gap-3">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/logo.png" alt="DAU Cafeteria" className="h-10 w-10 rounded-xl" />
+          <span className="font-display text-xl text-[var(--paper)]">Cafeteria Portal</span>
+        </Link>
+
+        <div>
+          <p className="font-display text-4xl xl:text-5xl text-[var(--paper)] leading-[1.12] mb-6">
+            Your campus
+            <br />
+            <em className="not-italic text-[var(--turmeric)]">dining voice.</em>
+          </p>
+          <p className="text-[var(--paper)]/55 text-base leading-relaxed max-w-xs">
+            Rate meals, report issues, and help the CMC make every canteen better
+            — one tap at a time.
+          </p>
+        </div>
+
+        <p className="text-[var(--paper)]/30 text-xs">
+          © {new Date().getFullYear()} DAU Cafeteria Portal
+        </p>
+      </div>
+
+      {/* Right form panel */}
+      <div className="flex-1 flex items-center justify-center p-6 md:p-12">
+        <div className="w-full max-w-sm">
+          {/* Mobile logo */}
+          <Link href="/" className="flex items-center gap-3 mb-10 lg:hidden">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/logo.png" alt="DAU" className="h-9 w-9 rounded-xl" />
+            <span className="font-display text-lg text-[var(--ink)]">Cafeteria Portal</span>
+          </Link>
+
+          <h1 className="font-display text-3xl text-[var(--ink)] mb-1">Welcome back</h1>
+          <p className="text-sm text-[var(--ink-soft)]/70 mb-8">
+            Sign in to your DAIICT account.
           </p>
 
-          <form onSubmit={handleSubmit} className="space-y-5">
-            {/* Student ID (Modified label from Email to match context) */}
-            <div className="form-control">
-              <label htmlFor="studentId" className="label">
-                <span className="label-text font-medium">Email Address</span>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-1.5">
+              <label className="text-sm font-semibold text-[var(--ink)]">
+                Email address
               </label>
               <input
                 type="text"
-                id="studentId"
                 placeholder="202xxxxxx@dau.ac.in"
-                className="input input-bordered w-full"
+                className={inputClass}
                 value={studentId}
                 onChange={(e) => setStudentId(e.target.value)}
                 required
               />
             </div>
 
-            {/* Password */}
-            <div className="form-control">
-              <label htmlFor="password" className="label">
-                <span className="label-text font-medium">Password</span>
-              </label>
-              <input
-                type="password"
-                id="password"
-                placeholder="••••••••"
-                className="input input-bordered w-full"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-              {/* Forgot Password Link */}
-              <div className="text-right mt-1">
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between">
+                <label className="text-sm font-semibold text-[var(--ink)]">Password</label>
                 <button
                   type="button"
                   onClick={() => setIsForgotOpen(true)}
-                  className="text-xs text-primary hover:underline font-medium"
+                  className="text-xs font-semibold text-[var(--turmeric)] hover:underline underline-offset-4"
                 >
-                  Forgot Password?
+                  Forgot password?
+                </button>
+              </div>
+              <div className="relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  placeholder="••••••••"
+                  className={inputClass + " pr-12"}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute inset-y-0 right-4 flex items-center text-[var(--ink-soft)]/40 hover:text-[var(--ink-soft)] transition-colors"
+                >
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
             </div>
 
-            {/* Display Error Message */}
-            {error && (
-              <p className="text-sm text-red-500 text-center">{error}</p>
-            )}
-
-            <button type="submit" className="btn btn-primary w-full rounded-md">
-              Sign In
+            <button
+              type="submit"
+              className="btn-tactile w-full bg-[var(--turmeric)] text-[var(--paper)] font-semibold rounded-xl py-3.5 hover:bg-[var(--turmeric-deep)] transition-colors shadow-[0_8px_24px_-8px_rgba(194,65,12,0.5)] mt-2"
+            >
+              Sign in
             </button>
           </form>
 
-          <div className="divider">OR</div>
-
-          <p className="text-center text-sm">
-            Don’t have an account?{" "}
-            <Link href="/signup" className="link link-primary font-medium">
+          <p className="text-center text-sm text-[var(--ink-soft)]/70 mt-6">
+            No account?{" "}
+            <Link href="/signup" className="font-semibold text-[var(--turmeric)] hover:underline underline-offset-4">
               Create one
             </Link>
           </p>
         </div>
       </div>
 
-      {/* --- FORGOT PASSWORD MODAL --- */}
+      {/* Forgot password modal */}
       {isForgotOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-          <div className="card w-full max-w-md bg-base-100 shadow-2xl animate-in zoom-in-95 duration-200">
-            <div className="card-body relative">
-              {/* Close Button */}
-              <button
-                onClick={closeForgotModal}
-                className="btn btn-sm btn-circle btn-ghost absolute right-4 top-4"
-              >
-                <X size={20} />
-              </button>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[var(--espresso)]/60 backdrop-blur-sm p-4">
+          <div className="w-full max-w-md bg-[var(--paper)] rounded-2xl shadow-2xl border border-[var(--kraft-border)] p-8 relative">
+            <button
+              onClick={closeForgotModal}
+              className="absolute right-5 top-5 w-8 h-8 flex items-center justify-center rounded-full text-[var(--ink-soft)] hover:bg-[var(--paper-dim)] transition-colors"
+            >
+              <X size={18} />
+            </button>
 
-              <div className="text-center mb-4">
-                <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-2 text-primary">
-                  {forgotStep === 3 ? (
-                    <CheckCircle size={24} />
-                  ) : (
-                    <KeyRound size={24} />
-                  )}
-                </div>
-                <h3 className="text-lg font-bold">Reset Password</h3>
-                <p className="text-sm text-gray-500">
-                  {forgotStep === 1 && "Enter your email to receive an OTP."}
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-10 h-10 bg-[var(--turmeric)]/10 rounded-full flex items-center justify-center text-[var(--turmeric)]">
+                {forgotStep === 3 ? <CheckCircle size={20} /> : <KeyRound size={20} />}
+              </div>
+              <div>
+                <h3 className="font-display text-xl text-[var(--ink)]">Reset password</h3>
+                <p className="text-xs text-[var(--ink-soft)]/60">
+                  {forgotStep === 1 && "Enter your registered email."}
                   {forgotStep === 2 && "Enter the OTP sent to your email."}
-                  {forgotStep === 3 && "Create a new password."}
+                  {forgotStep === 3 && "Set your new password."}
                 </p>
               </div>
-
-              <form onSubmit={handleForgotFlow} className="space-y-4">
-                {/* STEP 1: EMAIL */}
-                {forgotStep === 1 && (
-                  <div className="form-control">
-                    <label className="label pt-0">
-                      <span className="label-text">Registered Email</span>
-                    </label>
-                    <input
-                      type="email"
-                      placeholder="example@dau.ac.in"
-                      className="input input-bordered w-full"
-                      value={forgotEmail}
-                      onChange={(e) => setForgotEmail(e.target.value)}
-                      required
-                      autoFocus
-                    />
-                  </div>
-                )}
-
-                {/* STEP 2: OTP */}
-                {forgotStep === 2 && (
-                  <div className="form-control">
-                    <label className="label pt-0">
-                      <span className="label-text">Enter OTP</span>
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="Enter 6-digit OTP"
-                      className="input input-bordered w-full tracking-widest text-center"
-                      value={forgotOtp}
-                      onChange={(e) => setForgotOtp(e.target.value)}
-                      required
-                      autoFocus
-                    />
-                  </div>
-                )}
-
-                {/* STEP 3: NEW PASSWORD */}
-                {forgotStep === 3 && (
-                  <div className="form-control">
-                    <label className="label pt-0">
-                      <span className="label-text">New Password</span>
-                    </label>
-                    <input
-                      type="password"
-                      placeholder="••••••••"
-                      className="input input-bordered w-full"
-                      value={newPassword}
-                      onChange={(e) => setNewPassword(e.target.value)}
-                      required
-                      autoFocus
-                    />
-                  </div>
-                )}
-
-                {/* Feedback Message */}
-                {forgotMsg.text && (
-                  <div
-                    className={`text-sm text-center p-2 rounded ${
-                      forgotMsg.type === "success"
-                        ? "bg-green-50 text-green-600"
-                        : "bg-red-50 text-red-500"
-                    }`}
-                  >
-                    {forgotMsg.text}
-                  </div>
-                )}
-
-                {/* Action Button */}
-                <button
-                  type="submit"
-                  className="btn btn-primary w-full"
-                  disabled={forgotLoading}
-                >
-                  {forgotLoading ? (
-                    <Loader2 className="animate-spin" />
-                  ) : (
-                    <>
-                      {forgotStep === 1 && "Send OTP"}
-                      {forgotStep === 2 && "Verify OTP"}
-                      {forgotStep === 3 && "Reset Password"}
-                    </>
-                  )}
-                </button>
-
-                {forgotStep > 1 && forgotStep < 3 && (
-                  <div className="text-center">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setForgotStep(1);
-                        setForgotMsg({ type: "", text: "" });
-                      }}
-                      className="btn btn-link btn-xs no-underline text-gray-500"
-                    >
-                      Change Email
-                    </button>
-                  </div>
-                )}
-              </form>
             </div>
+
+            <form onSubmit={handleForgotFlow} className="space-y-4">
+              {forgotStep === 1 && (
+                <input
+                  type="email"
+                  placeholder="example@dau.ac.in"
+                  className={inputClass}
+                  value={forgotEmail}
+                  onChange={(e) => setForgotEmail(e.target.value)}
+                  required
+                  autoFocus
+                />
+              )}
+              {forgotStep === 2 && (
+                <input
+                  type="text"
+                  placeholder="Enter 6-digit OTP"
+                  className={inputClass + " text-center tracking-[0.25em] font-semibold"}
+                  value={forgotOtp}
+                  onChange={(e) => setForgotOtp(e.target.value)}
+                  required
+                  autoFocus
+                />
+              )}
+              {forgotStep === 3 && (
+                <input
+                  type="password"
+                  placeholder="New password"
+                  className={inputClass}
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  required
+                  autoFocus
+                />
+              )}
+
+              {forgotMsg.text && (
+                <div
+                  className={`text-sm text-center p-3 rounded-xl ${
+                    forgotMsg.type === "success"
+                      ? "bg-[var(--chalk-green)]/10 text-[var(--chalk-green)]"
+                      : "bg-[var(--turmeric)]/10 text-[var(--turmeric-deep)]"
+                  }`}
+                >
+                  {forgotMsg.text}
+                </div>
+              )}
+
+              <button
+                type="submit"
+                disabled={forgotLoading}
+                className="w-full bg-[var(--turmeric)] text-[var(--paper)] font-semibold rounded-xl py-3.5 hover:bg-[var(--turmeric-deep)] transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+              >
+                {forgotLoading ? (
+                  <Loader2 className="animate-spin w-5 h-5" />
+                ) : (
+                  <>
+                    {forgotStep === 1 && "Send OTP"}
+                    {forgotStep === 2 && "Verify OTP"}
+                    {forgotStep === 3 && "Reset password"}
+                  </>
+                )}
+              </button>
+
+              {forgotStep > 1 && forgotStep < 3 && (
+                <button
+                  type="button"
+                  onClick={() => { setForgotStep(1); setForgotMsg({ type: "", text: "" }); }}
+                  className="w-full text-sm text-[var(--ink-soft)]/60 hover:text-[var(--ink-soft)] transition-colors py-1"
+                >
+                  Change email
+                </button>
+              )}
+            </form>
           </div>
         </div>
       )}

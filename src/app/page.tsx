@@ -5,12 +5,15 @@ import InfoSection from "../components/home/InfoSection";
 import Navbar from "../components/navbar/navbar";
 import Footer from "../components/home/Footer";
 import CanteenSection from "../components/home/CanteenSection";
+import HeroSection from "../components/home/HeroSection";
 
 const Home: React.FC = () => {
   return (
     <div className="flex flex-col min-h-screen bg-base-100">
       <Navbar />
       <main className="flex-grow">
+        <HeroSection />
+
         {/* Canteen Section with Carousel */}
         <CanteenSection />
 

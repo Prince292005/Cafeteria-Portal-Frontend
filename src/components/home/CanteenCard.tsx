@@ -2,40 +2,67 @@
 "use client";
 
 import React from "react";
-import Image from "next/image";
 import Link from "next/link";
-import { Canteen } from "@/services/publicService"; // Import type
-const PLACEHOLDER_SVG =
-  "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIiBmaWxsPSIjZTU1ZWRlIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiAvPjwvc3ZnPg==";
+import { ArrowUpRight } from "lucide-react";
+import { Canteen } from "@/services/publicService";
+
 interface CanteenCardProps {
   canteen: Canteen;
 }
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+
+// A small set of warm, muted panel tones so cards differentiate from each
+// other without needing photography — cycles by canteen id.
+const PANEL_TONES = [
+  { bg: "#EFE3D0", ink: "#7C2D12" },
+  { bg: "#E4D9C7", ink: "#1F1812" },
+  { bg: "#F0E6D8", ink: "#166534" },
+  { bg: "#E9DCC4", ink: "#9A3412" },
+];
+
 const CanteenCard: React.FC<CanteenCardProps> = ({ canteen }) => {
+  const tone = PANEL_TONES[Number(canteen.id) % PANEL_TONES.length];
+  const initial = canteen.canteenName?.trim().charAt(0).toUpperCase() || "C";
+
   return (
-    // Use next/link to navigate to the dynamic canteen page
     <Link
       href={`/canteen/${canteen.id}`}
-      className="card w-full bg-base-100 shadow-xl transition-all hover:shadow-2xl hover:-translate-y-1"
+      className="group block bg-[var(--paper)] border border-[var(--kraft-border)] rounded-2xl overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:border-[var(--turmeric)]/30 hover:shadow-[0_18px_36px_-16px_rgba(26,20,16,0.22)]"
     >
-      <figure className="h-48 relative">
-        <img
-          src={`${API_BASE_URL}${canteen.imageUrl}`} // Fallback if url is missing
-          alt={canteen.canteenName}
-          className="object-cover transition-transform duration-500 group-hover:scale-110"
-          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-        />
-      </figure>
-      <div className="card-body">
-        <h2 className="card-title">{canteen.canteenName}</h2>
-        <p className="text-sm text-base-content/70 truncate-2-lines">
-          {canteen.info}
-        </p>
-        <div className="card-actions justify-end mt-2">
-          <span className="btn btn-primary rounded-lg btn-sm">
-            View Details
-          </span>
+      {/* Identity panel — no photography, just a confident monogram on a tonal field */}
+      <div
+        className="grain relative h-36 w-full flex items-center justify-center overflow-hidden"
+        style={{ backgroundColor: tone.bg }}
+      >
+        <span
+          className="font-display text-6xl select-none transition-transform duration-300 group-hover:scale-105"
+          style={{ color: tone.ink, opacity: 0.85 }}
+        >
+          {initial}
+        </span>
+        <span className="absolute top-3.5 left-3.5 flex items-center gap-1.5 bg-[var(--paper)]/95 text-[var(--chalk-green)] text-xs font-semibold px-2.5 py-1 rounded-full">
+          <span className="w-1.5 h-1.5 rounded-full bg-[var(--chalk-green-bright)]" />
+          Open now
+        </span>
+      </div>
+
+      {/* Content */}
+      <div className="p-5">
+        <div className="hairline mb-4 -mt-px" />
+        <div className="flex items-start justify-between gap-3 mb-2">
+          <h3 className="font-display text-xl text-[var(--ink)] leading-tight">
+            {canteen.canteenName}
+          </h3>
+          <ArrowUpRight
+            size={18}
+            className="shrink-0 mt-1.5 text-[var(--ink-soft)]/40 transition-all duration-200 group-hover:text-[var(--turmeric)] group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+          />
         </div>
+        <p className="text-sm text-[var(--ink-soft)] line-clamp-2 leading-relaxed mb-3">
+          {canteen.info || "Menus, hours, and ratings for this counter."}
+        </p>
+        <span className="text-sm font-semibold text-[var(--turmeric)] group-hover:underline underline-offset-4">
+          View menu &amp; rate
+        </span>
       </div>
     </Link>
   );

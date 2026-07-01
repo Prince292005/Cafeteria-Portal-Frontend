@@ -31,16 +31,16 @@ const Navbar: React.FC = () => {
     "transition-all duration-200 ease-in-out active:scale-95";
 
   return (
-    <div className="navbar bg-white/90 backdrop-blur-md shadow-sm sticky top-0 z-50 px-4 border-b border-base-200/50">
+    <div className="navbar bg-[var(--paper)]/95 backdrop-blur-md sticky top-0 z-50 px-4 border-b border-[var(--kraft-border)]">
       {/* --- 1. NAVBAR HEADER (Logo + Mobile Toggle) --- */}
       <div className="flex-1 flex justify-between items-center">
         <Link
           href="/"
-          className="flex items-center gap-2 text-xl font-extrabold text-neutral hover:text-primary transition-colors tracking-tight"
+          className="flex items-center gap-2.5 font-display text-lg text-[var(--ink)] transition-colors"
           onClick={closeMenu}
         >
-          <span className="bg-primary/10 text-primary p-1.5 rounded-lg">
-            <LayoutDashboard size={20} />
+          <span className="bg-[var(--turmeric)] text-[var(--paper)] w-8 h-8 flex items-center justify-center rounded-lg">
+            <LayoutDashboard size={16} />
           </span>
           Cafeteria Portal
         </Link>
@@ -66,9 +66,9 @@ const Navbar: React.FC = () => {
             {isAuthenticated ? (
               <>
                 <li className="mr-1">
-                  <div className="flex items-center gap-2 px-3 py-1.5 bg-base-100 border border-base-200 rounded-full cursor-default hover:bg-base-100">
-                    <div className="w-2 h-2 rounded-full bg-success animate-pulse"></div>
-                    <span className="text-xs font-bold text-base-content/70 uppercase tracking-wide">
+                  <div className="flex items-center gap-2 px-3 py-1.5 bg-[var(--paper-dim)] border border-[var(--kraft-border)] rounded-full cursor-default">
+                    <div className="w-1.5 h-1.5 rounded-full bg-[var(--chalk-green-bright)] animate-pulse"></div>
+                    <span className="text-xs font-semibold text-[var(--ink-soft)]">
                       {user?.studentId}
                     </span>
                   </div>
@@ -78,7 +78,7 @@ const Navbar: React.FC = () => {
                   <li>
                     <Link
                       href="/admin/dashboard"
-                      className={`btn btn-sm btn-neutral text-white rounded-full shadow-md shadow-neutral/20 ${btnTransition}`}
+                      className={`inline-flex items-center gap-2 text-sm font-semibold bg-[var(--espresso)] text-[var(--paper)] px-4 py-2 rounded-full ${btnTransition} hover:bg-[var(--espresso-card)]`}
                     >
                       <LayoutDashboard size={16} />
                       <span className="hidden lg:inline">Admin Panel</span>
@@ -89,7 +89,7 @@ const Navbar: React.FC = () => {
                 <li>
                   <button
                     onClick={handleLogout}
-                    className={`btn btn-sm btn-ghost rounded-full text-base-content/90 hover:text-red-500 hover:bg-error/10 border border-transparent hover:border-error/20 ${btnTransition}`}
+                    className={`inline-flex items-center gap-2 text-sm font-semibold text-[var(--ink-soft)] px-4 py-2 rounded-full border border-transparent ${btnTransition} hover:text-red-600 hover:bg-red-50 hover:border-red-100`}
                   >
                     <Power size={16} />
                     <span className="hidden lg:inline">Logout</span>
@@ -101,7 +101,7 @@ const Navbar: React.FC = () => {
                 <li>
                   <Link
                     href="/login"
-                    className={`btn btn-sm btn-ghost text-base-content/70 hover:text-base-content hover:bg-base-200 rounded-full px-5 ${btnTransition}`}
+                    className={`inline-flex items-center gap-2 text-sm font-semibold text-[var(--ink-soft)] px-5 py-2 rounded-full ${btnTransition} hover:text-[var(--ink)] hover:bg-[var(--paper-dim)]`}
                   >
                     <LogIn size={16} />
                     Login
@@ -110,7 +110,7 @@ const Navbar: React.FC = () => {
                 <li>
                   <Link
                     href="/signup"
-                    className={`btn btn-sm btn-primary text-white rounded-full px-6 shadow-lg shadow-primary/30 hover:shadow-primary/50 hover:-translate-y-0.5 ${btnTransition}`}
+                    className={`inline-flex items-center gap-2 text-sm font-semibold bg-[var(--turmeric)] text-[var(--paper)] px-6 py-2 rounded-full shadow-[0_8px_20px_-8px_rgba(194,65,12,0.55)] ${btnTransition} hover:bg-[var(--turmeric-deep)] hover:-translate-y-px`}
                   >
                     <UserPlus size={16} />
                     Sign Up
@@ -124,7 +124,7 @@ const Navbar: React.FC = () => {
 
       {/* --- 3. MOBILE MENU DROPDOWN --- */}
       {isOpen && (
-        <div className="absolute top-full left-0 w-full bg-white/95 backdrop-blur-xl border-b border-base-200 shadow-lg p-4 md:hidden animate-in slide-in-from-top-5 duration-200">
+        <div className="absolute top-full left-0 w-full bg-[var(--paper)]/95 backdrop-blur-xl border-b border-[var(--kraft-border)] shadow-lg p-4 md:hidden animate-in slide-in-from-top-5 duration-200">
           <ul className="flex flex-col gap-4">
             {isAuthenticated ? (
               <>
